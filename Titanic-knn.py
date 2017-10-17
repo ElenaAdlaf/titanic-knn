@@ -2,7 +2,7 @@
 # Predicts the survival of Titanic passengers based on the training and test data
 # found in the titanic datasets on kaggle.com.
 # Elena Adlaf
-# Version 1.5, 10/11/17
+# Version 1.6, 10/16/17
 
 # Import necessary modules.
 import pandas as pd
@@ -13,7 +13,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import classification_report, confusion_matrix
 
 # Load the csv file containing Titanic training set into a Pandas dataframe, setting empty values as NaN.
-traindata = pd.read_csv('F:/Coding/Practice datasets/Titanic/train.csv', na_values='Nothing')
+traindata = pd.read_csv('E:/Coding/Practice datasets/Titanic/train.csv', na_values='Nothing')
 
 # Explore the data by printing the head of the dataset.
 print('Column names and data of first twenty passengers - training set:\n{}'.format(traindata.head(20)))
@@ -84,7 +84,7 @@ print(classification_report(y_test, y_pred))
 
 # Prepare the test dataset
 # Load the csv file containing Titanic test set into a Pandas dataframe, setting empty values as NaN.
-testdata = pd.read_csv('F:/Coding/Practice datasets/Titanic/test.csv', na_values='Nothing')
+testdata = pd.read_csv('E:/Coding/Practice datasets/Titanic/test.csv', na_values='Nothing')
 
 # Explore the data by printing the head of the dataset.
 print('Column names and data of first twenty passengers - test set:\n{}'.format(testdata.head(20)))
@@ -151,59 +151,27 @@ fares_died = capfaredied['Fare']
 print('Number of fares ($0-150) who lived: {}'.format(fares_lived.count()))
 print('Number of fares ($0-150) who died: {}'.format(fares_died.count()))
 
-# Create variables to plot the sex data.
-male_lived = len(df3[np.logical_and(df3['Sex_male']==1, df3['Survived']==1)])
-female_lived = len(df3[np.logical_and(df3['Sex_female']==1, df3['Survived']==1)])
-print('Number of males who survived: {}'.format(male_lived))
-print('Number of females who survived: {}'.format(female_lived))
-total_male = len(df3[df3['Sex_male']==1])
-total_female = len(df3[df3['Sex_female']==1])
-print('Total number of males: {}'.format(total_male))
-print('Total number of females: {}'.format(total_female))
-plotmale = male_lived/total_male
-plotfemale = female_lived/total_female
-print('Ratio of males surviving: {}'.format(plotmale))
-print('Ratio of females surviving: {}'.format(plotfemale))
+def ratio_survived(x):
+    total = len(df3[df3[x]==1])
+    total_lived = len(df3[np.logical_and(df3[x]==1, df3['Survived']==1)])
+    return total_lived/total
 
-# Create variables to plot the ticket class data.
-firstclass_lived = len(df3[np.logical_and(df3['Pclass_1']==1, df3['Survived']==1)])
-secondclass_lived = len(df3[np.logical_and(df3['Pclass_2']==1, df3['Survived']==1)])
-thirdclass_lived = len(df3[np.logical_and(df3['Pclass_3']==1, df3['Survived']==1)])
-print('Number of 1st class who survived: {}'.format(firstclass_lived))
-print('Number of 2nd class who survived: {}'.format(secondclass_lived))
-print('Number of 3rd class who survived: {}'.format(thirdclass_lived))
-total_firstclass = len(df3[df3['Pclass_1']==1])
-total_secondclass = len(df3[df3['Pclass_2']==1])
-total_thirdclass = len(df3[df3['Pclass_3']==1])
-print('Total number of first class: {}'.format(total_firstclass))
-print('Total number of second class: {}'.format(total_secondclass))
-print('Total number of third class: {}'.format(total_thirdclass))
-plotfirst = firstclass_lived/total_firstclass
-plotsecond = secondclass_lived/total_secondclass
-plotthird = thirdclass_lived/total_thirdclass
-print('Ratio of first class passengers surviving: {}'.format(plotfirst))
-print('Ratio of second class passengers surviving: {}'.format(plotsecond))
-print('Ratio of third class passengers surviving: {}'.format(plotthird))
+def get_sex_ratios():
+    male_ratio = ratio_survived('Sex_male')
+    female_ratio = ratio_survived('Sex_female')
+    return male_ratio, female_ratio
 
-# Create variables to plot the port of embarkation.
-portC_lived = len(df3[np.logical_and(df3['Embarked_C']==1, df3['Survived']==1)])
-portQ_lived = len(df3[np.logical_and(df3['Embarked_Q']==1, df3['Survived']==1)])
-portS_lived = len(df3[np.logical_and(df3['Embarked_S']==1, df3['Survived']==1)])
-print('Number embarking from Cherbourg who survived: {}'.format(portC_lived))
-print('Number embarking from Queenstown who survived: {}'.format(portQ_lived))
-print('Number embarking from Southampton who survived: {}'.format(portS_lived))
-total_portC = len(df3[df3['Embarked_C']==1])
-total_portQ = len(df3[df3['Embarked_Q']==1])
-total_portS = len(df3[df3['Embarked_S']==1])
-print('Total number embarking from Cherbourg: {}'.format(total_portC))
-print('Total number embarking from Queenstown: {}'.format(total_portQ))
-print('Total number embarking from Southampton: {}'.format(total_portS))
-plotC = portC_lived/total_portC
-plotQ = portQ_lived/total_portQ
-plotS = portS_lived/total_portS
-print('Ratio of Cherbourg passengers surviving: {}'.format(plotC))
-print('Ratio of Queenstown passengers surviving: {}'.format(plotQ))
-print('Ratio of Southampton passengers surviving: {}'.format(plotS))
+def get_class_ratios():
+    first_ratio = ratio_survived('Pclass_1')
+    second_ratio = ratio_survived('Pclass_2')
+    third_ratio = ratio_survived('Pclass_3')
+    return first_ratio, second_ratio, third_ratio
+
+def get_port_ratios():
+    C_ratio = ratio_survived('Pclass_1')
+    Q_ratio = ratio_survived('Pclass_2')
+    S_ratio = ratio_survived('Pclass_3')
+    return C_ratio, Q_ratio, S_ratio
 
 # Show all graphs on one sheet.
 fig, axes = plt.subplots(nrows=2, ncols=2)
@@ -218,21 +186,21 @@ ax0.set_title('Distribution of fares (< $150)')
 
 # Plot a bar graph showing survival rate by sex.
 bar_position_sex = [1,2]
-data_sex = [plotmale, plotfemale]
+data_sex = get_sex_ratios()
 labels_sex = ['Male', 'Female']
 ax1.bar(bar_position_sex, data_sex, tick_label=labels_sex, color='mediumorchid')
 ax1.set_title('Survival rate by sex')
 
 # Plot a bar graph showing survival rate by ticket class.
 bar_position_class = [1,2,3]
-data_class = [plotfirst, plotsecond, plotthird]
+data_class = get_class_ratios()
 labels_class = ['1st', '2nd', '3rd']
 ax2.bar(bar_position_class, data_class, tick_label=labels_class, color='green')
 ax2.set_title('Survival rate by ticket class')
 
 # Plot a bar graph showing survival rate by port of embarkation.
 bar_position_port = [1,2,3]
-data_port = [plotC, plotQ, plotS]
+data_port = get_port_ratios()
 labels_port = ['Cherbourg', 'Queenstown', 'Southampton']
 ax3.bar(bar_position_port, data_port, tick_label=labels_port, color='darkturquoise')
 ax3.set_xticklabels(labels_port, rotation=45, ha='right')
@@ -241,10 +209,4 @@ ax3.set_title('Survival rate by port of embarkation')
 # Show the graphs.
 fig.tight_layout()
 plt.show()
-
-
-
-
-
-
 
